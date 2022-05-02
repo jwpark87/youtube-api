@@ -6,25 +6,14 @@ import Container from "@mui/material/Container";
 import VideoList from "./component/video_list";
 import Navbar from "./component/navbar";
 
-function App() {
+function App({ youtube }) {
   const [videos, setVideos] = useState([]);
-  const [name, setName] = useState("park");
+  const search = (query) => {
+    youtube.search(query).then((videos) => setVideos(videos));
+  };
 
   useEffect(() => {
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
-    fetch(
-      "https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=25&key=AIzaSyBv3QX7UPTnZj8nRqPBkYxK_WnTx3Q-0jw",
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        setVideos(result);
-      })
-      .catch((error) => console.log("error", error));
+    youtube.mostPopular().then((videos) => setVideos(videos));
   }, []);
 
   return (
@@ -32,7 +21,7 @@ function App() {
       <React.Fragment>
         <CssBaseline />
         <Container maxWidth="md">
-          <Navbar />
+          <Navbar onSearch={search} />
           <VideoList items={videos} />
         </Container>
       </React.Fragment>
